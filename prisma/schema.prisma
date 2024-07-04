@@ -1,0 +1,17 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Calification {
+  id           Int     @id @default(autoincrement())
+  nameStudent  String
+  context      String
+  studentLevel String
+  calification String
+  graphId      String
+}
