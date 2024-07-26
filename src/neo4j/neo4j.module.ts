@@ -31,7 +31,7 @@ export class Neo4jModule {
           useFactory: async (config: Neo4jConfig) => {
             try {
               const { host, scheme, port, username, password } = config;
-              const connection= new Connection (`${scheme}://${host}:${port}`,{username, password}) as ConnectionWithDriver
+              const connection= new Connection (`${scheme}://${host}${port}`,{username, password}) as ConnectionWithDriver
                 await connection.driver.verifyConnectivity();
               return connection;
 
