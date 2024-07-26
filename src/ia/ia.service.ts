@@ -3,16 +3,19 @@ import { ClientOptions, OpenAI } from 'openai';
 import { QueryRepository } from "../neo4j/query.repository";
 import { PrismaClient } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class IaService {
     private openai: OpenAI;
 
     constructor(
+        private configService: ConfigService,
         private queryRepository: QueryRepository,
         private prisma: PrismaClient
     ) {
-        const options: ClientOptions = { apiKey: 'sk-proj-ol2OBbKeqDeNZc0I8XAzT3BlbkFJIpldcuByKl4h5VT4tx5c' };
+        const options: ClientOptions = { apiKey: this.configService.get<string>('OPENAI_API') };
+        console.log(options)
         this.openai = new OpenAI(options);
     }
 
