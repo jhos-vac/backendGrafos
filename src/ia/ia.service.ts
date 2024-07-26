@@ -15,7 +15,6 @@ export class IaService {
         private prisma: PrismaClient
     ) {
         const options: ClientOptions = { apiKey: this.configService.get<string>('OPENAI_API') };
-        console.log(options)
         this.openai = new OpenAI(options);
     }
 
