@@ -104,7 +104,7 @@ export class IaService {
     }
 
     async generaQuery(context: string, entities: string): Promise<string> {
-        const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected, and assign a unique id to each node.`;
+        const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected.`;
         try {
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o',
