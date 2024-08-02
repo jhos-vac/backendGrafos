@@ -22,14 +22,14 @@ export class IaService {
         console.log("Parameters received:", { text, studentLevel, nameStudent });
 
         const context = JSON.stringify({ text });
-        const prompt = `Extrae los conceptos del siguiente texto: ${context}`;
+        const prompt = `Extract the key concepts from the following text: ${context}`;
         try {
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
-                        content: 'Eres un asistente que extrae conceptos de textos proporcionados, dependiendo del número de palabras que hay en el texto.',
+                        content: 'You are an assistant that extracts concepts from provided texts, depending on the number of words in the text.',
                     },
                     {
                         role: 'user',
@@ -57,7 +57,7 @@ export class IaService {
     }
 
     async Calification(context: string, studentLv: string, query: string): Promise<string> {
-        const prompt = `De acuerdo a la cantidad de relaciones y conceptos que haya en esta query ${query}, extraída del mismo texto, califica del 1 al 100: ${context}, teniendo en cuenta que fue escrito por un estudiante de inglés en el nivel ${studentLv}.`;
+        const prompt = `Based on the number of relationships and concepts present in this query ${query}, extracted from the text, grade it from 1 to 100: ${context}, considering it was written by an English student at level ${studentLv}, including only the essential information.`;
 
         try {
             const completion = await this.openai.chat.completions.create({
@@ -65,7 +65,7 @@ export class IaService {
                 messages: [
                     {
                         role: 'system',
-                        content: 'Eres un maestro que se encarga de calificar un texto en inglés, de acuerdo al nivel en que se encuentra el estudiante.'
+                        content: 'You are a teacher responsible for grading an English text according to the student\'s level.'
                     },
                     {
                         role: 'user',
@@ -73,7 +73,7 @@ export class IaService {
                     },
                 ],
                 temperature: 0.5,
-                max_tokens: 500,
+                max_tokens: 1000,
             });
             const calification = completion.choices[0].message.content;
             return calification;
@@ -84,14 +84,14 @@ export class IaService {
     }
 
     async generaQuery(context: string, entities: string): Promise<string> {
-        const prompt = `Genera una query para Neo4j, no tengas en cuenta queries anteriores, evita utilizar ";" que permita relacionar estas entidades, crea las entidades: ${entities}, utilizando el siguiente contexto, crea las relaciones: ${context}, creando un solo grafo donde se unan todas las entidades, y asigna un id único a cada nodo.`;
+        const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected, and assign a unique id to each node.`;
         try {
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
-                        content: 'Eres un asistente que crea una query con la sintaxis de Neo4j, a partir de entidades y contextos proporcionados, eliminando títulos, textos extras, comillas y backticks que no sean parte de las entidades, elimina etiquetas y devuelve la query como texto plano.',
+                        content: 'You are an assistant that creates a query using Neo4j syntax from provided entities and contexts, removing titles, extra texts, quotes, and backticks that are not part of the entities. Remove tags and return the query as plain text.',
                     },
                     {
                         role: 'user',
@@ -99,7 +99,7 @@ export class IaService {
                     },
                 ],
                 temperature: 0.5,
-                max_tokens: 1500,
+                max_tokens: 3000,
             });
             const query: string = completion.choices[0].message.content;
             return query;
@@ -136,9 +136,6 @@ export class IaService {
         if (!nameStudent || !context || !studentLevel || !calification || !graphId) {
             throw new Error('Missing required arguments');
         }
-
-        console.log("Data to be saved:", { nameStudent, context, studentLevel, calification, graphId });
-
         await this.prisma.calification.create({
             data: {
                 nameStudent,
