@@ -65,7 +65,27 @@ export class IaService {
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are a teacher responsible for grading an English text according to the student\'s level.'
+                        content: 'You are a teacher responsible for grading an English text according to the student\'s level. Please provide the grading details in the following format:\n' +
+                            '\n' +
+                            '1. **Coherence and Organization (20 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            '2. **Grammar and Syntax (20 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            '3. **Vocabulary (20 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            '4. **Content and Relevance (20 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            '5. **Spelling and Punctuation (10 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            '6. **Creativity and Expression (10 points)**\n' +
+                            '   - [Provide your comments here]\n' +
+                            '\n' +
+                            'Based on these criteria, please provide the final grading score in the format: Total Score: [score]/100 or Final Grade: [score]/100.\n'
                     },
                     {
                         role: 'user',
