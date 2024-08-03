@@ -102,12 +102,8 @@ export class IaService {
 
     async generaQuery(context: string, entities: string): Promise<string> {
         const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected. The query should follow this structure:
-CREATE (entity1:Label {property1: value1, property2: value2})
-CREATE (entity2:Label {property1: value1, property2: value2})
-CREATE (entityN:Label {property1: value1, property2: value2})
-CREATE (entity1)-[:RELATIONSHIP_TYPE]->(entity2)
-CREATE (entity2)-[:RELATIONSHIP_TYPE]->(entity3)
-CREATE (entityN-1)-[:RELATIONSHIP_TYPE]->(entityN)
+CREATE (entity:Label {property: value})
+CREATE (entity)-[:RELATIONSHIP_TYPE]->(entity)
 Make sure to connect all entities based on the provided context and ensure all entities are part of the graph.`;
 
         try {
@@ -117,12 +113,8 @@ Make sure to connect all entities based on the provided context and ensure all e
                     {
                         role: 'system',
                         content: `You are an assistant that creates a query using Neo4j syntax from provided entities and contexts. Remove titles, extra texts, quotes, and backticks that are not part of the entities. Remove tags and return the query as plain text. The query should follow this structure:
-CREATE (entity1:Label {property1: value1, property2: value2})
-CREATE (entity2:Label {property1: value1, property2: value2})
-CREATE (entityN:Label {property1: value1, property2: value2})
-CREATE (entity1)-[:RELATIONSHIP_TYPE]->(entity2)
-CREATE (entity2)-[:RELATIONSHIP_TYPE]->(entity3)
-CREATE (entityN-1)-[:RELATIONSHIP_TYPE]->(entityN)
+CREATE (entity:Label {property: value})
+CREATE (entity)-[:RELATIONSHIP_TYPE]->(entity)
 Ensure to create all necessary entities and relationships based on the provided context.`,
                     },
                     {
