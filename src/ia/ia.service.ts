@@ -19,8 +19,6 @@ export class IaService {
     }
 
     async generateEntity(text: string, studentLevel: string, nameStudent: string): Promise<string> {
-        console.log("Parameters received:", { text, studentLevel, nameStudent });
-
         const context = JSON.stringify({ text });
         const prompt = `Extract all concepts from the following text: ${context}. Include every concept mentioned, regardless of its importance. Do not prioritize or filter out concepts; list every single one.`;
         try {
@@ -44,11 +42,10 @@ export class IaService {
                 const query = await this.generaQuery(context, entities);
                 const calification = await this.Calification(context, studentLevel, query);
                 const nodes = await this.createNode(query);
-                console.log(nameStudent, context, studentLevel, calification, nodes.id);
                 await this.saveCalification(nameStudent, context, studentLevel, calification, nodes.id);
-                return calification;
+                return "Create node and save calification";
             } else {
-                throw new Error('La respuesta de la API no es válida');
+                throw new Error('No completion found');
             }
         } catch (e) {
             console.error(e);
@@ -137,7 +134,6 @@ Ensure to create all necessary entities and relationships based on the provided 
                 max_tokens: 3000,
             });
             const query: string = completion.choices[0].message.content;
-            console.log('Generated query:', query);
             return query;
         } catch (e) {
             console.error(e);
