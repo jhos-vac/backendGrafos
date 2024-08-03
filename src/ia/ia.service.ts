@@ -22,14 +22,14 @@ export class IaService {
         console.log("Parameters received:", { text, studentLevel, nameStudent });
 
         const context = JSON.stringify({ text });
-        const prompt = `Extract the key concepts from the following text: ${context}`;
+        const prompt = `Extract all concepts from the following text: ${context}. Include every concept mentioned, regardless of its importance. Do not prioritize or filter out concepts; list every single one.`;
         try {
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are an assistant that extracts concepts from provided texts, depending on the number of words in the text.',
+                        content: 'You are an assistant that extracts every concept from provided texts, including all mentioned concepts regardless of their importance. List every concept without filtering.',
                     },
                     {
                         role: 'user',
@@ -104,14 +104,29 @@ export class IaService {
     }
 
     async generaQuery(context: string, entities: string): Promise<string> {
-        const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected.`;
+        const prompt = `Generate a Neo4j query, without considering previous queries. Avoid using ";" that allows relating these entities. Create the entities: ${entities}, using the following context to create the relationships: ${context}, creating a single graph where all entities are connected. The query should follow this structure:
+CREATE (entity1:Label {property1: value1, property2: value2})
+CREATE (entity2:Label {property1: value1, property2: value2})
+CREATE (entityN:Label {property1: value1, property2: value2})
+CREATE (entity1)-[:RELATIONSHIP_TYPE]->(entity2)
+CREATE (entity2)-[:RELATIONSHIP_TYPE]->(entity3)
+CREATE (entityN-1)-[:RELATIONSHIP_TYPE]->(entityN)
+Make sure to connect all entities based on the provided context and ensure all entities are part of the graph.`;
+
         try {
             const completion = await this.openai.chat.completions.create({
                 model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are an assistant that creates a query using Neo4j syntax from provided entities and contexts, removing titles, extra texts, quotes, and backticks that are not part of the entities. Remove tags and return the query as plain text.',
+                        content: `You are an assistant that creates a query using Neo4j syntax from provided entities and contexts. Remove titles, extra texts, quotes, and backticks that are not part of the entities. Remove tags and return the query as plain text. The query should follow this structure:
+CREATE (entity1:Label {property1: value1, property2: value2})
+CREATE (entity2:Label {property1: value1, property2: value2})
+CREATE (entityN:Label {property1: value1, property2: value2})
+CREATE (entity1)-[:RELATIONSHIP_TYPE]->(entity2)
+CREATE (entity2)-[:RELATIONSHIP_TYPE]->(entity3)
+CREATE (entityN-1)-[:RELATIONSHIP_TYPE]->(entityN)
+Ensure to create all necessary entities and relationships based on the provided context.`,
                     },
                     {
                         role: 'user',
@@ -122,6 +137,7 @@ export class IaService {
                 max_tokens: 3000,
             });
             const query: string = completion.choices[0].message.content;
+            console.log('Generated query:', query);
             return query;
         } catch (e) {
             console.error(e);
